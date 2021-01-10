@@ -1,0 +1,37 @@
+﻿<Window x:Class="GAlbumSync.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GAlbumSync"
+        mc:Ignorable="d"
+        Title="GAlbumSync" Height="450" Width="800">
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50" />
+			<RowDefinition Height="45" />
+			<RowDefinition Height="45" />
+            <RowDefinition Height="50"/>
+		</Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Grid.Column="1" Margin="10"
+                Content="Connect to Google Photos" Click="connect_Click" />
+
+        <Label Grid.Row="1" Grid.ColumnSpan="2" Margin="10"
+                Content="Source folder (Should contains one folder per Album, with the pîctures on it)"/>
+        
+        <TextBox Grid.Row="2" Grid.ColumnSpan="2" Margin="10"
+                Name="FileNameTextBox" />
+        <Button Grid.Row="2" Grid.Column="2" Margin="10"
+                Content="Browse" Name="BrowseSource" Click="browseSource_Click" />
+
+        <Button Grid.Row="3" Grid.Column="1" Margin="10"
+            Content="Sync" Click="sync_Click" />
+    </Grid>
+</Window>
