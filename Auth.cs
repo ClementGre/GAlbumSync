@@ -16,28 +16,11 @@ namespace GAlbumSync
     public sealed class Auth
     {
 
-        public static bool auth()
-        {
+        public static string tokenPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GAlbumSync.credential");
+        public UserCredential credential;
 
-            try{
-                new Auth().authenticate().Wait();
-            }
-            catch (AggregateException ex){
-                foreach (var e in ex.InnerExceptions){
-                    System.Diagnostics.Debug.WriteLine("ERROR: " + e.Message);
-                    return false;
-                }
-            }
-            return true;
-
-        }
-
-        private async Task authenticate()
-        {
-            string tokenPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GAlbumSync.credential");
-            Console.WriteLine("token file: " + tokenPath);
-
-            UserCredential credential;
+        public async Task auth(){
+            
             using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
             {
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
@@ -47,11 +30,14 @@ namespace GAlbumSync
                     new FileDataStore(tokenPath));
             }
 
-            Console.WriteLine("token: " + credential.Token);
+        }
 
+        public void resetConexion(){
 
-
-
+            string[] files = Directory.GetFiles(tokenPath);    
+            foreach(string file in files){    
+                File.Delete(file);
+            }
         }
     }
 }

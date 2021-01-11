@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace GAlbumSync
 {
@@ -20,19 +21,47 @@ namespace GAlbumSync
     /// </summary>
     public partial class MainWindow : Window
     {
+
+
+        private Auth auth = new Auth();
+
         public MainWindow(){
             InitializeComponent();
             FileNameTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            updateConnectedStatus();
+        }
+
+        public void updateConnectedStatus()
+        {
+            Dispatcher.Invoke(new Action(() => {
+                if(isConnected()){
+                    ConnexionStatus.Text = "You are connected to Google";
+                    ConnexionStatus.Foreground = Brushes.Green;
+                }else{
+                    ConnexionStatus.Text = "You are not connected to Google";
+                    ConnexionStatus.Foreground = Brushes.Red;
+                }
+            }));
             
         }
+        public bool isConnected(){
+            return auth.credential != null;
+        }
 
-        void connect_Click(object sender, RoutedEventArgs e){
+        async void connect_Click(object sender, RoutedEventArgs e){
             Console.WriteLine("Connecting to Google Photos...");
 
-            Auth.auth();
+            await auth.auth();
+
+            updateConnectedStatus();
 
         }
 
+        void resetConnexion_Click(object sender, RoutedEventArgs e){
+            auth.resetConexion();
+            auth.credential = null;
+            updateConnectedStatus();
+        }
         void browseSource_Click(object sender, RoutedEventArgs e){
             Console.WriteLine("Browsing Source...");
 
@@ -45,10 +74,14 @@ namespace GAlbumSync
             }
         }
 
-        void sync_Click(object sender, RoutedEventArgs e){
-            Console.WriteLine("Syncing albums...");
+        async void sync_Click(object sender, RoutedEventArgs e){
+            if(isConnected()){
+                Console.WriteLine("Syncing albums...");
+                await new Sync().sync();
 
-            Sync.sync();
+            }else{
+                connect_Click(this, new RoutedEventArgs());
+            }
         }
 
     }

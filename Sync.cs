@@ -6,23 +6,19 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using System.Threading;
 
 namespace GAlbumSync
 {
     public sealed class Sync
     {
 
-       public static bool sync()
-        {
 
-            return true;
-        }
+       public async Task sync(){
 
-        private bool authenticate()
-        {
-
-
-            return true;
         }
     }
 }
