@@ -5,33 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GAlbumSync"
         mc:Ignorable="d"
-        Title="GAlbumSync" Height="450" Width="800">
+        Title="GAlbumSync" Height="350" Width="600" MinHeight="300" MinWidth="500">
     <Grid>
 
         <Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="100" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="50" />
-			<RowDefinition Height="45" />
-			<RowDefinition Height="45" />
-            <RowDefinition Height="50"/>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Grid.Column="1" Margin="10"
-                Content="Connect to Google Photos" Click="connect_Click" />
+        <Button Grid.Row="0" Grid.ColumnSpan="2" Margin="10" Width="250" Height="40"
+                Content="Connect to Google Photos" Click="connect_Click" FontSize="13"/>
 
-        <Label Grid.Row="1" Grid.ColumnSpan="2" Margin="10"
-                Content="Source folder (Should contains one folder per Album, with the pîctures on it)"/>
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,5"
+                Text="Source folder (Should contains one folder per Album, with the pictures on it)"
+                FontSize="13"/>
         
-        <TextBox Grid.Row="2" Grid.ColumnSpan="2" Margin="10"
-                Name="FileNameTextBox" />
-        <Button Grid.Row="2" Grid.Column="2" Margin="10"
-                Content="Browse" Name="BrowseSource" Click="browseSource_Click" />
+        <TextBox Grid.Row="2" Margin="10,0,10,10"
+                TextWrapping="WrapWithOverflow" Name="FileNameTextBox" FontSize="13" Padding="2"/>
+        <Button Grid.Row="2" Grid.Column="1" Margin="0,0,10,10" Height="25"
+                Content="Browse" Name="BrowseSource" Click="browseSource_Click" 
+                FontSize="13"/>
 
-        <Button Grid.Row="3" Grid.Column="1" Margin="10"
-            Content="Sync" Click="sync_Click" />
+        <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Width="350" Margin="10,10,10,5"
+                Text="Create one album for each folder and move the Google pictures into the created albums."
+                TextWrapping="WrapWithOverflow" FontSize="13"/>
+        <Button Grid.Row="4" Grid.ColumnSpan="2" Margin="10,0,10,10" Width="250" Height="40"
+            Content="Sync" Click="sync_Click" FontSize="13"/>
     </Grid>
 </Window>

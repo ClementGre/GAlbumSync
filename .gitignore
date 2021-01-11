@@ -1,4 +1,4 @@
 bin/
 obj/
 .vscode/
-client_secret.json
+client_secrets.json

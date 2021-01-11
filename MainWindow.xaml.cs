@@ -22,29 +22,33 @@ namespace GAlbumSync
     {
         public MainWindow(){
             InitializeComponent();
+            FileNameTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            
         }
 
         void connect_Click(object sender, RoutedEventArgs e){
             Console.WriteLine("Connecting to Google Photos...");
 
+            Auth.auth();
 
         }
 
         void browseSource_Click(object sender, RoutedEventArgs e){
             Console.WriteLine("Browsing Source...");
 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.DefaultExt = ".txt";
-            dlg.Filter = "Text documents (.txt)|*.txt";
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            dlg.RootFolder = Environment.SpecialFolder.MyPictures;
 
             Nullable<bool> result = dlg.ShowDialog();
             if(result == true){
-                FileNameTextBox.Text = dlg.FileName;
+                FileNameTextBox.Text = dlg.SelectedPath;
             }
         }
 
         void sync_Click(object sender, RoutedEventArgs e){
             Console.WriteLine("Syncing albums...");
+
+            Sync.sync();
         }
 
     }
