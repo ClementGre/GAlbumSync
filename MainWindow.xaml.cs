@@ -77,7 +77,7 @@ namespace GAlbumSync
         async void sync_Click(object sender, RoutedEventArgs e){
             if(isConnected()){
                 Console.WriteLine("Syncing albums...");
-                await new Sync().sync();
+                await new Sync().sync(FileNameTextBox.Text, auth);
 
             }else{
                 connect_Click(this, new RoutedEventArgs());

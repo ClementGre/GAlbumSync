@@ -2,3 +2,4 @@ bin/
 obj/
 .vscode/
 client_secrets.json
+ClientSecrets.cs
