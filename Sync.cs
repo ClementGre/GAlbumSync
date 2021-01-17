@@ -29,6 +29,9 @@ namespace GAlbumSync
     public sealed class Sync
     {
 
+
+        Dictionary<String, String> mediaIdByName = new Dictionary<String, String>();
+
         RestClient client = new RestClient("https://photoslibrary.googleapis.com/v1");
         MainWindow mainWindow;
         
@@ -37,12 +40,18 @@ namespace GAlbumSync
         }
 
         public async Task sync(string path, Auth auth){
+
+            Console.WriteLine("Indexing pictures...");
+
+            bool indexOk = await IndexMediasIds(auth);
+            if(!indexOk) return;
+
             Console.WriteLine("Syncing " + path);
 
             string[] files = Directory.GetDirectories(path);    
             foreach(string file in files){    
-                bool ok = await processDir(file, auth);
-                if(!ok) return;
+                bool dirOk = await processDir(file, auth);
+                if(!dirOk) return;
             }
         }
 
@@ -55,9 +64,36 @@ namespace GAlbumSync
             string albumId = await createAlbum(name, auth);
 
             if(albumId != null){
-                string[] files = Directory.GetFiles(path);    
-                foreach(string file in files){    
+
+                List<string> ids50 = new List<string>();
+
+                string[] filesPaths = Directory.GetFiles(path);
+                int toMove = filesPaths.Length;
+                int moved = 0;
+                foreach(string filePath in filesPaths){
+                    string fileName = Path.GetFileName(filePath);
+
+                    if(mediaIdByName.ContainsKey(fileName)){
+                        ids50.Add(mediaIdByName[fileName]);
+                    }
                     
+
+                    if(ids50.Count >= 50){
+                        bool addOk = await addMediasToAlbum(albumId, auth, ids50);
+                        if(!addOk) return false;
+                        moved += ids50.Count;
+                        Console.WriteLine("Moving media " + moved + "/" + toMove);
+                        ids50.Clear();
+                    }
+
+                }
+
+                if(ids50.Count >= 1){
+                    bool addOk = await addMediasToAlbum(albumId, auth, ids50);
+                    if(!addOk) return false;
+                    moved += ids50.Count;
+                    Console.WriteLine("Moving media " + moved + "/" + toMove);
+                    ids50.Clear();
                 }
 
                 return true;
@@ -66,8 +102,79 @@ namespace GAlbumSync
         }
 
 
-        private async Task<String> createAlbum(string name, Auth auth){
+        private async Task<bool> addMediasToAlbum(string albumId, Auth auth, List<string> mediaIds){
             
+            Console.WriteLine("Adding medias to album " + albumId);
+
+            var request = new RestRequest("albums/" + albumId + ":batchAddMediaItems", Method.POST);
+            request.AddHeader("Authorization", "Bearer " + auth.getToken());
+            request.AddHeader("content-type", "application/json");
+
+            
+            string list = "";
+            bool firstLoop = true;
+            foreach(string mediaId in mediaIds){
+                if(firstLoop){
+                    list += mediaId;
+                    firstLoop = false;
+                }else{
+                    list += "," + mediaId;
+                }
+            }
+            Console.WriteLine("{\"mediaItemIds\": [" + list + "] }");
+            request.AddJsonBody("{\"mediaItemIds\": [" + list + "] }");
+            
+            String response = await client.PostAsync<String>(request);
+            Console.WriteLine(response);
+
+            dynamic parsedData = JsonConvert.DeserializeObject(response);
+
+            try{
+                Console.WriteLine("code : " + parsedData.id);
+                showRequestError(response);
+                return false;
+            }catch(NullReferenceException){
+                return true;
+            }
+
+        }
+
+        private async Task<bool> IndexMediasIds(Auth auth, string nextPageToken = null){
+            
+            var request = new RestRequest("mediaItems", Method.GET);
+            request.AddHeader("Authorization", "Bearer " + auth.getToken());
+            request.AddHeader("content-type", "application/json");
+
+            request.AddQueryParameter("pageSize", "100");
+            if(nextPageToken != null) request.AddQueryParameter("pageToken", nextPageToken);
+
+            String response = await client.GetAsync<String>(request);
+            dynamic parsedData = JsonConvert.DeserializeObject(response);
+
+            try{
+                foreach(dynamic mediaData in parsedData.mediaItems){
+                    if(mediaIdByName.ContainsKey((string) mediaData.filename)){
+                        Console.WriteLine(mediaData.filename + " exists twice");
+                    }else{
+                        mediaIdByName.Add((string) mediaData.filename, (string) mediaData.id);
+                    } 
+                }
+            }catch(NullReferenceException){
+                Console.WriteLine("code : " + parsedData.id);
+                showRequestError(response);
+                return false;
+            }
+
+            if(!String.IsNullOrEmpty((string) parsedData.nextPageToken)){
+                return await IndexMediasIds(auth, (string) parsedData.nextPageToken);
+            }
+
+            return true;
+
+        }
+
+        private async Task<String> createAlbum(string name, Auth auth){
+
             string existingId = await existsAlbum(name, auth);
             if(existingId == null){
                 return null;
