@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,6 +34,8 @@ namespace GAlbumSync
                     new FileDataStore(tokenPath));
             //}
 
+            Console.WriteLine("Token : " + getToken());
+
         }
 
         public void resetConexion(){
@@ -41,6 +44,10 @@ namespace GAlbumSync
             foreach(string file in files){    
                 File.Delete(file);
             }
+        }
+
+        public string getToken(){
+            return credential.Token.AccessToken;
         }
     }
 }

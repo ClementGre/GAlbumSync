@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using Ookii.Dialogs.Wpf;
 
 namespace GAlbumSync
 {
@@ -77,7 +78,8 @@ namespace GAlbumSync
         async void sync_Click(object sender, RoutedEventArgs e){
             if(isConnected()){
                 Console.WriteLine("Syncing albums...");
-                await new Sync().sync(FileNameTextBox.Text, auth);
+                await new Sync(this).sync(FileNameTextBox.Text, auth);
+                Console.WriteLine("Albums synced");
 
             }else{
                 connect_Click(this, new RoutedEventArgs());
