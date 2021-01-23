@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,13 +24,14 @@ namespace GAlbumSync
     public partial class MainWindow : Window
     {
 
-
         private Auth auth = new Auth();
+        
 
         public MainWindow(){
             InitializeComponent();
             FileNameTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             updateConnectedStatus();
+            
         }
 
         public void updateConnectedStatus()
@@ -56,6 +58,8 @@ namespace GAlbumSync
 
             updateConnectedStatus();
 
+            
+
         }
 
         void resetConnexion_Click(object sender, RoutedEventArgs e){
@@ -73,12 +77,13 @@ namespace GAlbumSync
             if(result == true){
                 FileNameTextBox.Text = dlg.SelectedPath;
             }
+
         }
 
         async void sync_Click(object sender, RoutedEventArgs e){
             if(isConnected()){
                 Console.WriteLine("Syncing albums...");
-                await new Sync(this).sync(FileNameTextBox.Text, auth);
+                new Sync(this).sync(FileNameTextBox.Text, auth);
                 Console.WriteLine("Albums synced");
 
             }else{
